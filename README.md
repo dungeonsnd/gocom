@@ -1,0 +1,2 @@
+# gocom
+Go common library.
