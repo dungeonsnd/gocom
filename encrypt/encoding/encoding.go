@@ -23,8 +23,8 @@ func Base32Decode(str string) ([]byte, error) {
 	return base32.StdEncoding.DecodeString(str)
 }
 
-func Base64Encode(data string) string {
-	return base64.StdEncoding.EncodeToString([]byte(data))
+func Base64Encode(data []byte) string {
+	return base64.StdEncoding.EncodeToString(data)
 }
 
 func Base64Decode(str string) ([]byte, error) {
