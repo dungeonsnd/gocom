@@ -8,6 +8,8 @@ import (
 	"encoding/pem"
 	"errors"
 	"fmt"
+
+	gcsha256 "github.com/dungeonsnd/gocom/encrypt/hash/sha256"
 )
 
 func RsaEncrypt(origData []byte, publicKey []byte) ([]byte, error) {
@@ -74,9 +76,10 @@ func RsaDecryptByDefaultKey(b64CipherText string, sumHext string) ([]byte, error
 	if err != nil {
 		return nil, err
 	}
-	// sum := sha256.Sum256(origData)
-	// fmt.Printf("decrypted: %s\n", string(origData))
-	// fmt.Printf("SHA256: %s\n", hex.EncodeToString(sum[:]))
+	sumData := gcsha256.HashHex(origData, 1)
+	if sumData != sumHext {
+		return nil, errors.New("hash check failed")
+	}
 
 	return origData, nil
 }
