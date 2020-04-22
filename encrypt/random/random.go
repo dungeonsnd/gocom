@@ -7,6 +7,7 @@ import (
 	math_rand "math/rand"
 	"time"
 
+	"github.com/dungeonsnd/gocom/encrypt/hash/sha256"
 	uuid "github.com/satori/go.uuid"
 )
 
@@ -49,7 +50,7 @@ func RandomB64(byteLen uint16) string {
 	return base64.StdEncoding.EncodeToString(b)
 }
 
-func RandByteMix() []byte {
+func RandMixByte() []byte {
 	u1 := uuid.NewV4()
 	u2 := uuid.NewV1()
 	u := append(u1[0:], u2[0:]...)
@@ -60,6 +61,19 @@ func RandByteMix() []byte {
 		u = append(u, u3...)
 	}
 	return u
+}
+
+func RandMixHashHex() string {
+	u1 := uuid.NewV4()
+	u2 := uuid.NewV1()
+	u := append(u1[0:], u2[0:]...)
+
+	u3 := make([]byte, 32)
+	_, err := rand.Read(u3)
+	if err == nil {
+		u = append(u, u3...)
+	}
+	return sha256.HashHex(u, 1)
 }
 
 func RandNum(length int) string {
