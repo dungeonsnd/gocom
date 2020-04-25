@@ -3,6 +3,7 @@ package sha256
 import (
 	"crypto/sha256"
 	"encoding/hex"
+	"strings"
 )
 
 func Hash(src []byte, rounds int) []byte {
@@ -17,4 +18,13 @@ func Hash(src []byte, rounds int) []byte {
 func HashHex(src []byte, rounds int) string {
 	h := Hash(src, rounds)
 	return hex.EncodeToString(h)
+}
+
+func CheckHash(dataByte []byte, expectedHashHex string, minExpectedHashHexLen uint) (bool, string) {
+	dataHash := HashHex(dataByte, 1)
+	if len(expectedHashHex) < minExpectedHashHexLen || strings.Index(dataHash, expectedHashHex) != 0 {
+		return false, dataHash
+	} else {
+		return true, dataHash
+	}
 }
