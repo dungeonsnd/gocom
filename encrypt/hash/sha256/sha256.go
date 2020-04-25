@@ -20,7 +20,7 @@ func HashHex(src []byte, rounds int) string {
 	return hex.EncodeToString(h)
 }
 
-func CheckHash(dataByte []byte, expectedHashHex string, minExpectedHashHexLen uint) (bool, string) {
+func CheckHash(dataByte []byte, expectedHashHex string, minExpectedHashHexLen int) (bool, string) {
 	dataHash := HashHex(dataByte, 1)
 	if len(expectedHashHex) < minExpectedHashHexLen || strings.Index(dataHash, expectedHashHex) != 0 {
 		return false, dataHash
