@@ -18,6 +18,24 @@ func AesDecryptForB64(origDataB64 string, key []byte, iv []byte) ([]byte, error)
 	return AesDecrypt(p, key, iv)
 }
 
+func AesDecryptForB64AndHexKey(origDataB64 string, keyHex string, ivHex string) ([]byte, error) {
+	k, err := encoding.HexDecode(keyHex)
+	if err != nil {
+		return nil, err
+	}
+	i, err := encoding.HexDecode(ivHex)
+	if err != nil {
+		return nil, err
+	}
+
+	p, err := encoding.Base64Decode(origDataB64)
+	if err != nil {
+		return nil, err
+	}
+
+	return AesDecrypt(p, k, i)
+}
+
 func AesEncryptForHexKey(origData []byte, keyHex string, ivHex string) ([]byte, error) {
 	k, err := encoding.HexDecode(keyHex)
 	if err != nil {
