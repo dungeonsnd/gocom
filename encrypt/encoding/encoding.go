@@ -52,11 +52,11 @@ func JsonHexEncode(structObj interface{}) (error, string) {
 
 func WriteToFileAsJson(filename string, v interface{}, indent string, truncateIfExist bool) error {
 
-	buf, err := json.MarshalIndent(v, "", "    ")
+	buf, err := json.MarshalIndent(v, "", indent)
 	if err != nil {
 		return err
 	}
-	err = fileutil.WriteToFile(filename, buf, true)
+	err = fileutil.WriteToFile(filename, buf, truncateIfExist)
 	if err != nil {
 		return err
 	}
