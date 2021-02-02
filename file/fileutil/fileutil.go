@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"os"
 	"path"
+	"path/filepath"
 	"strings"
 )
 
@@ -36,13 +37,63 @@ func IsVideo(filename string) bool {
 	return exist
 }
 
+func IsVideoExt(ext string) bool {
+	if strings.EqualFold(ext, ".mp4") || strings.EqualFold(ext, ".mov") || strings.EqualFold(ext, ".mpeg") ||
+		strings.EqualFold(ext, ".mpg") || strings.EqualFold(ext, ".wmv") ||
+		strings.EqualFold(ext, ".rm") || strings.EqualFold(ext, ".rmvb") ||
+		strings.EqualFold(ext, ".swf") || strings.EqualFold(ext, ".flv") ||
+		strings.EqualFold(ext, ".3GP") || strings.EqualFold(ext, ".mkv") ||
+		strings.EqualFold(ext, ".m4v") || strings.EqualFold(ext, ".ogg") ||
+		strings.EqualFold(ext, ".avi") || strings.EqualFold(ext, ".dat") ||
+		strings.EqualFold(ext, ".vob") || strings.EqualFold(ext, ".mpe") ||
+		strings.EqualFold(ext, ".asf") || strings.EqualFold(ext, ".asx") ||
+		strings.EqualFold(ext, ".f4v") {
+		return true
+	}
+	return false
+}
+
+//  /a/b/c.txt -> /a/b/
+func GetFilePath(fullfilename string) string {
+	dir, _ := filepath.Split(fullfilename)
+	return dir
+}
+
+//  /a/b/c.txt -> /a/b/, c.txt
+func GetFilePathAndName(fullfilename string) (string, string) {
+	dir, file := filepath.Split(fullfilename)
+	return dir, file
+}
+
+//  /a/b/c.txt -> c.txt
+func GetFilename(fullfilename string) string {
+	return path.Base(fullfilename)
+}
+
+//  /a/b/c.txt -> c
 func GetFilenameOnly(fullfilename string) string {
 	return strings.TrimSuffix(fullfilename, path.Ext(fullfilename))
+}
+
+//  /a/b/c.txt -> .txt
+func GetFileSuffix(fullfilename string) string {
+	return path.Ext(fullfilename)
 }
 
 func FileNameToJpgFileName(onlyFilename string) string {
 	name := GetFilenameOnly(onlyFilename)
 	return name + ".JPG"
+}
+
+func DirSize(path string) (int64, error) {
+	var size int64
+	err := filepath.Walk(path, func(_ string, info os.FileInfo, err error) error {
+		if !info.IsDir() {
+			size += info.Size()
+		}
+		return err
+	})
+	return size, err
 }
 
 // 如果是单个文件则返回 true.
@@ -119,4 +170,93 @@ func ReadFromFile(filename string) (error, []byte) {
 	}
 
 	return nil, content
+}
+
+func MoveFile(file, targetDirWithoutTargetName string) error {
+	targetDir := targetDirWithoutTargetName
+	err := CreateDirRecursive(targetDir)
+	if err != nil {
+		//fmt.Printf("CreateDirRecursive {%v} failed :%v \n", targetDir, err)
+		return err
+	}
+
+	base := path.Base(file)
+	t := path.Join(targetDir, base)
+	i := 1
+
+	for {
+		if IsFileNotExist(t) {
+			break
+		}
+		fileSuffix := path.Ext(base)                         //获取文件后缀
+		filenameOnly := strings.TrimSuffix(base, fileSuffix) //获取文件名
+		t = path.Join(targetDir, filenameOnly+fmt.Sprintf("(%v)", i)+fileSuffix)
+		i++
+	}
+
+	err = os.Rename(file, t)
+	if err != nil {
+		//fmt.Printf("Rename {%v to %v} failed :%v \n", file, t, err)
+		return err
+	}
+
+	return nil
+}
+
+func ListDir(folder string) ([]string, error) {
+	var ret []string
+	isFile, err := IsFile(folder)
+	if err != nil {
+		return ret, err
+	}
+	if isFile {
+		ret = append(ret, folder)
+	} else {
+
+		files, err := ioutil.ReadDir(folder)
+		if err != nil {
+			return ret, err
+		}
+		for _, fi := range files {
+			t := path.Join(folder, fi.Name())
+			if fi.IsDir() {
+				r, _ := ListDir(t)
+				ret = append(ret, r...)
+			} else {
+				ret = append(ret, t)
+			}
+		}
+	}
+	return ret, nil
+}
+
+func SearchEmptyFoldersAndFiles(d string) ([]string, error) {
+
+	var result []string
+
+	files, err := ioutil.ReadDir(d)
+	if err != nil {
+		return result, err
+	}
+	for _, fi := range files {
+		subd := path.Join(d, fi.Name())
+		if fi.IsDir() {
+			sz, err := DirSize(subd)
+			if err != nil {
+				return result, err
+			}
+			if sz < 1 {
+				result = append(result, subd)
+			} else {
+				SearchEmptyFoldersAndFiles(subd)
+			}
+
+		} else {
+			if fi.Size() < 1 {
+				result = append(result, subd)
+			}
+		}
+	}
+
+	return result, nil
 }
