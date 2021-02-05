@@ -136,7 +136,7 @@ func CreateDirRecursive(filePath string) error {
 }
 
 func WriteToFile(filename string, content []byte, truncateIfExist bool) error {
-	flag := os.O_RDWR | os.O_CREATE
+	flag := os.O_RDWR | os.O_CREATE | os.O_APPEND
 	if truncateIfExist {
 		flag = os.O_RDWR | os.O_CREATE | os.O_TRUNC
 	}
