@@ -136,10 +136,27 @@ func CreateDirRecursive(filePath string) error {
 }
 
 func WriteToFile(filename string, content []byte, truncateIfExist bool) error {
-	flag := os.O_RDWR | os.O_CREATE | os.O_EXCL
+	flag := os.O_RDWR | os.O_CREATE
 	if truncateIfExist {
 		flag = os.O_RDWR | os.O_CREATE | os.O_TRUNC
 	}
+	fileObj, err := os.OpenFile(filename, flag, 0644)
+	if err != nil {
+		return err
+	}
+	defer fileObj.Close()
+
+	n, err := fileObj.Write(content)
+	if err != nil {
+		return err
+	}
+	if n != len(content) {
+		return errors.New("written length error")
+	}
+	return nil
+}
+
+func WriteToFileWithFlag(filename string, content []byte, flag int) error {
 	fileObj, err := os.OpenFile(filename, flag, 0644)
 	if err != nil {
 		return err
