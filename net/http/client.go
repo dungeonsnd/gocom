@@ -7,7 +7,7 @@ import (
 	"net/http"
 )
 
-func PostMapByJson(url string, parms map[string]interface{}) (map[string]interface{}, error) {
+func PostJson(url string, parms interface{}) (interface{}, error) {
 	client := &http.Client{}
 	data, err := json.Marshal(parms)
 	if err != nil {
@@ -33,7 +33,7 @@ func PostMapByJson(url string, parms map[string]interface{}) (map[string]interfa
 		return nil, err
 	}
 
-	var p map[string]interface{}
+	var p interface{}
 	err = json.Unmarshal(body, &p)
 	if err != nil {
 		return nil, err
