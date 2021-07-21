@@ -1,6 +1,7 @@
 package fileutil
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"io/ioutil"
@@ -173,20 +174,20 @@ func WriteToFileWithFlag(filename string, content []byte, flag int) error {
 	return nil
 }
 
-func ReadFromFile(filename string) (error, []byte) {
+func ReadFromFile(filename string) ([]byte, error) {
 	fileObj, err := os.Open(filename)
 	if err != nil {
 		fmt.Printf("ReadFromFile, Open err=%v\n", err)
-		return err, nil
+		return nil, err
 	}
 	defer fileObj.Close()
 
 	content, err := ioutil.ReadAll(fileObj)
 	if err != nil {
-		return err, nil
+		return nil, err
 	}
 
-	return nil, content
+	return content, nil
 }
 
 func MoveFile(file, targetDirWithoutTargetName string) error {
@@ -276,4 +277,30 @@ func SearchEmptyFoldersAndFiles(d string) ([]string, error) {
 	}
 
 	return result, nil
+}
+
+func WriteToFileAsJson(filename string, v interface{}, indent string, truncateIfExist bool) error {
+
+	buf, err := json.MarshalIndent(v, "", indent)
+	if err != nil {
+		return err
+	}
+	err = WriteToFile(filename, buf, truncateIfExist)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func ReadFileJsonToObject(filename string, obj interface{}) error {
+
+	buf, err := ReadFromFile(filename)
+	if err != nil {
+		return err
+	}
+	err = json.Unmarshal(buf, &obj)
+	if err != nil {
+		return err
+	}
+	return nil
 }

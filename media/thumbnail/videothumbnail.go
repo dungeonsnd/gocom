@@ -24,6 +24,8 @@ func CaptureVideoSnapshot(ffmpegBinFile string, inputFilename string, outFilenam
 	if ext != ".mp4" && ext != ".MP4" && ext != ".mov" && ext != ".MOV" {
 		return false
 	}
-	run.RunExe(ffmpegBinFile, "-ss", "00:00:00", "-i", inputFilename, "-vframes", "1", "-q:v", "2", "-vf", fmt.Sprintf("scale=%d:-1", outputImgWidth), outFilename)
+
+	parms := []string{"-ss", "00:00:00", "-i", inputFilename, "-vframes", "1", "-q:v", "2", "-vf", fmt.Sprintf("scale=%d:-1", outputImgWidth), outFilename}
+	run.RunExe(ffmpegBinFile, parms)
 	return true
 }

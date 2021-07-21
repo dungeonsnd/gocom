@@ -5,8 +5,6 @@ import (
 	"encoding/base64"
 	"encoding/hex"
 	"encoding/json"
-
-	"github.com/dungeonsnd/gocom/file/fileutil"
 )
 
 func HexEncode(data []byte) string {
@@ -48,30 +46,4 @@ func JsonHexEncode(structObj interface{}) (error, string) {
 		return err, ""
 	}
 	return nil, hex.EncodeToString(b)
-}
-
-func WriteToFileAsJson(filename string, v interface{}, indent string, truncateIfExist bool) error {
-
-	buf, err := json.MarshalIndent(v, "", indent)
-	if err != nil {
-		return err
-	}
-	err = fileutil.WriteToFile(filename, buf, truncateIfExist)
-	if err != nil {
-		return err
-	}
-	return nil
-}
-
-func ReadFileJsonToObject(filename string, obj interface{}) error {
-
-	err, buf := fileutil.ReadFromFile(filename)
-	if err != nil {
-		return err
-	}
-	err = json.Unmarshal(buf, &obj)
-	if err != nil {
-		return err
-	}
-	return nil
 }

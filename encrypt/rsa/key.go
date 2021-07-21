@@ -11,28 +11,31 @@ import (
 
 func ReadRsaPubKey(priKeyFileName string, pubKeyFileName string) (error, string) {
 
-	err, publicKey := fileutil.ReadFromFile(pubKeyFileName)
+	publicKey, err := fileutil.ReadFromFile(pubKeyFileName)
 	if err != nil {
-		err := GenRsaKey(priKeyFileName, pubKeyFileName, 2048)
-		if err != nil {
-			return err, ""
+		err1 := GenRsaKey(priKeyFileName, pubKeyFileName, 2048)
+		if err1 != nil {
+			return err1, ""
+		} else {
+			var err2 error
+			publicKey, err2 = fileutil.ReadFromFile(pubKeyFileName)
+			if err2 != nil {
+				return err2, ""
+			}
+
 		}
-	}
-	err, publicKey = fileutil.ReadFromFile(pubKeyFileName)
-	if err != nil {
-		return err, ""
 	}
 	return nil, string(publicKey)
 }
 
 func ReadRsaKeys(priKeyFileName string, pubKeyFileName string) (error, []byte, []byte) {
 
-	err, priKeyBytes := fileutil.ReadFromFile(priKeyFileName)
+	priKeyBytes, err := fileutil.ReadFromFile(priKeyFileName)
 	if err != nil {
 		return err, nil, nil
 	}
 
-	err, publicKey := fileutil.ReadFromFile(pubKeyFileName)
+	publicKey, err := fileutil.ReadFromFile(pubKeyFileName)
 	if err != nil {
 		return err, nil, nil
 	}
