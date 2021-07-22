@@ -86,3 +86,8 @@ func RandNum(length int) string {
 	}
 	return string(result)
 }
+
+func GenUUID() string {
+	u1 := uuid.NewV4()
+	return u1.String()
+}
