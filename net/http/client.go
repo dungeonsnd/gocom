@@ -7,7 +7,7 @@ import (
 	"net/http"
 )
 
-func PostJson(url string, parms interface{}, ret interface{}) error {
+func PostJsonWithHeaders(url string, parms interface{}, headers map[string]string, ret interface{}) error {
 	client := &http.Client{}
 	data, err := json.Marshal(parms)
 	if err != nil {
@@ -21,6 +21,9 @@ func PostJson(url string, parms interface{}, ret interface{}) error {
 
 	req.Header.Set("Content-Type", "application/json")
 	// req.Header.Set("Cookie", "name=anny")
+	for k, v := range headers {
+		req.Header.Set(k, v)
+	}
 
 	resp, err := client.Do(req)
 	if err != nil {
@@ -38,6 +41,10 @@ func PostJson(url string, parms interface{}, ret interface{}) error {
 		return err
 	}
 	return nil
+}
+
+func PostJson(url string, parms interface{}, ret interface{}) error {
+	return PostJsonWithHeaders(url, parms, nil, ret)
 }
 
 func PostJsonReturnMap(url string, parms interface{}) (interface{}, error) {
