@@ -1,7 +1,9 @@
 package run
 
 import (
+	"bufio"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"os/exec"
 )
@@ -92,4 +94,51 @@ func RunExe2(name string, arg ...string) {
 	}
 
 	// fmt.Printf("stdout: %s", bytes)
+}
+
+func RunAndChangeDir(stdOutput chan string, errOutput chan string, dir string, exe string, params ...string) error {
+	cmd := exec.Command(exe, params...)
+
+	o, err := cmd.StdoutPipe()
+	if err != nil {
+		return err
+	}
+
+	e, err := cmd.StderrPipe()
+	if err != nil {
+		return err
+	}
+
+	if len(dir) > 0 {
+		cmd.Dir = dir
+	}
+	err = cmd.Start()
+	if err != nil {
+		return err
+	}
+
+	go func(o io.ReadCloser) {
+		readerO := bufio.NewReader(o)
+		for {
+			line, err2 := readerO.ReadString('\n')
+			if err2 != nil || io.EOF == err2 {
+				break
+			}
+			stdOutput <- line
+		}
+	}(o)
+
+	go func(e io.ReadCloser) {
+		readerE := bufio.NewReader(e)
+		for {
+			line, err2 := readerE.ReadString('\n')
+			if err2 != nil || io.EOF == err2 {
+				break
+			}
+			errOutput <- line
+		}
+	}(e)
+
+	err = cmd.Wait()
+	return err
 }
