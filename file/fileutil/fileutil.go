@@ -141,6 +141,14 @@ func WriteToFile(filename string, content []byte, truncateIfExist bool) error {
 	if truncateIfExist {
 		flag = os.O_RDWR | os.O_CREATE | os.O_TRUNC
 	}
+
+	if IsFileNotExist(GetFilePath(filename)) {
+		err := CreateDirRecursive(GetFilePath(filename))
+		if err != nil {
+			return fmt.Errorf("failed CreateDirRecursive, err:%v", err)
+		}
+	}
+
 	fileObj, err := os.OpenFile(filename, flag, 0644)
 	if err != nil {
 		return err
@@ -158,6 +166,14 @@ func WriteToFile(filename string, content []byte, truncateIfExist bool) error {
 }
 
 func WriteToFileWithFlag(filename string, content []byte, flag int) error {
+
+	if IsFileNotExist(GetFilePath(filename)) {
+		err := CreateDirRecursive(GetFilePath(filename))
+		if err != nil {
+			return fmt.Errorf("failed CreateDirRecursive, err:%v", err)
+		}
+	}
+
 	fileObj, err := os.OpenFile(filename, flag, 0644)
 	if err != nil {
 		return err
