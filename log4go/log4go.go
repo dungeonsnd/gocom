@@ -19,7 +19,9 @@ import (
 var logPath string
 var logFilename string
 var maxAge uint32
-var rotationTime uint32
+var rotationTime int64
+var rotationSize int64
+var rotationCount uint32
 
 var (
 	singleton *LoggerMgr
@@ -69,7 +71,7 @@ func F(format string, args ...interface{}) {
 	Logf("", FatalLevel, format, args...)
 }
 
-func InitLog(writePath, filename string, _maxAge, _rotationTime uint32) {
+func InitLog(writePath, filename string, _maxAge uint32, _rotationTime int64, _rotationSize int64, _rotationCount uint32) {
 	if len(writePath) > 0 {
 		logPath = writePath
 	}
@@ -78,6 +80,8 @@ func InitLog(writePath, filename string, _maxAge, _rotationTime uint32) {
 	}
 	maxAge = _maxAge
 	rotationTime = _rotationTime
+	rotationSize = _rotationSize
+	rotationCount = _rotationCount
 
 	// Log as JSON instead of the default ASCII formatter.
 	logrus.SetFormatter(&logrus.JSONFormatter{})
@@ -136,12 +140,25 @@ func (mgr *LoggerMgr) InitLogger(logName string) *Logger {
 
 	logger.SetLevel(logrus.TraceLevel)
 	logger.SetReportCaller(true)
-	logWriter, _ := rotatelogs.New(
-		logPath+".%Y-%m-%d-%H-%M.log",
-		rotatelogs.WithLinkName(logPath),                                   // 生成软链，指向最新日志文件
-		rotatelogs.WithMaxAge(time.Duration(maxAge)*time.Hour),             // 文件最大保存时间
-		rotatelogs.WithRotationTime(time.Duration(rotationTime)*time.Hour), // 日志切割时间间隔
-	)
+	var logWriter *rotatelogs.RotateLogs
+	if rotationTime > 0 {
+		logWriter, _ = rotatelogs.New(
+			logPath+".%Y-%m-%d-%H-%M.log",
+			rotatelogs.WithLinkName(logPath),                                   // 生成软链，指向最新日志文件
+			rotatelogs.WithMaxAge(time.Duration(maxAge)*time.Hour),             // 文件最大保存时间
+			rotatelogs.WithRotationTime(time.Duration(rotationTime)*time.Hour), // 日志切割时间间隔
+			rotatelogs.WithRotationCount(uint(rotationCount)),
+		)
+	} else {
+		logWriter, _ = rotatelogs.New(
+			logPath+".%Y-%m-%d-%H-%M.log",
+			rotatelogs.WithLinkName(logPath),                       // 生成软链，指向最新日志文件
+			rotatelogs.WithMaxAge(time.Duration(maxAge)*time.Hour), // 文件最大保存时间
+			rotatelogs.WithRotationSize(rotationSize),
+			rotatelogs.WithRotationCount(uint(rotationCount)),
+		)
+	}
+
 	// writeMap := lfshook.WriterMap{
 	// 	logrus.InfoLevel:  logWriter,
 	// 	logrus.FatalLevel: logWriter,
