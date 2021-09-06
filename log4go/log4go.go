@@ -141,22 +141,27 @@ func (mgr *LoggerMgr) InitLogger(logName string) *Logger {
 	logger.SetLevel(logrus.TraceLevel)
 	logger.SetReportCaller(true)
 	var logWriter *rotatelogs.RotateLogs
+	var err error
 	if rotationTime > 0 {
-		logWriter, _ = rotatelogs.New(
+		logWriter, err = rotatelogs.New(
 			logPath+".%Y-%m-%d-%H-%M.log",
 			rotatelogs.WithLinkName(logPath),                                   // 生成软链，指向最新日志文件
 			rotatelogs.WithMaxAge(time.Duration(maxAge)*time.Hour),             // 文件最大保存时间
 			rotatelogs.WithRotationTime(time.Duration(rotationTime)*time.Hour), // 日志切割时间间隔
-			rotatelogs.WithRotationCount(uint(rotationCount)),
 		)
+		if err != nil {
+			fmt.Printf("failed to call rotatelogs.New, err:%v \n", err)
+		}
 	} else {
-		logWriter, _ = rotatelogs.New(
+		logWriter, err = rotatelogs.New(
 			logPath+".%Y-%m-%d-%H-%M.log",
-			rotatelogs.WithLinkName(logPath),                       // 生成软链，指向最新日志文件
-			rotatelogs.WithMaxAge(time.Duration(maxAge)*time.Hour), // 文件最大保存时间
+			rotatelogs.WithLinkName(logPath), // 生成软链，指向最新日志文件
 			rotatelogs.WithRotationSize(rotationSize),
 			rotatelogs.WithRotationCount(uint(rotationCount)),
 		)
+		if err != nil {
+			fmt.Printf("failed to call rotatelogs.New, err:%v \n", err)
+		}
 	}
 
 	// writeMap := lfshook.WriterMap{
