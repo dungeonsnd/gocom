@@ -9,16 +9,16 @@ import (
 )
 
 func PostJsonWithHeaders(url string, parms interface{},
-	headers map[string]string, ret interface{}) (*http.Request, *http.Response, error) {
+	headers map[string]string, ret interface{}) (*http.Request, *http.Response, []byte, error) {
 	client := &http.Client{}
 	data, err := json.Marshal(parms)
 	if err != nil {
-		return nil, nil, fmt.Errorf("failed Marshal, err:%v, parms:%+v", err, parms)
+		return nil, nil, nil, fmt.Errorf("failed Marshal, err:%v, parms:%+v", err, parms)
 	}
 
 	req, err := http.NewRequest("POST", url, bytes.NewBuffer(data))
 	if err != nil {
-		return nil, nil, fmt.Errorf("failed NewRequest, err:%v, data:%+v", err, string(data))
+		return nil, nil, nil, fmt.Errorf("failed NewRequest, err:%v, data:%+v", err, string(data))
 	}
 
 	req.Header.Set("Content-Type", "application/json")
@@ -29,23 +29,23 @@ func PostJsonWithHeaders(url string, parms interface{},
 
 	resp, err := client.Do(req)
 	if err != nil {
-		return req, resp, fmt.Errorf("failed NewRequest, err:%v, data:%+v", err, string(data))
+		return req, resp, nil, fmt.Errorf("failed NewRequest, err:%v, data:%+v", err, string(data))
 	}
 	defer resp.Body.Close()
 
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		return req, resp, fmt.Errorf("failed ReadAll, err:%v", err)
+		return req, resp, body, fmt.Errorf("failed ReadAll, err:%v", err)
 	}
 
 	err = json.Unmarshal(body, &ret)
 	if err != nil {
-		return req, resp, fmt.Errorf("failed Unmarshal, err:%v, body:%v", err, string(body))
+		return req, resp, body, fmt.Errorf("failed Unmarshal, err:%v, body:%v", err, string(body))
 	}
-	return req, resp, nil
+	return req, resp, body, nil
 }
 
-func PostJson(url string, parms interface{}, ret interface{}) (*http.Request, *http.Response, error) {
+func PostJson(url string, parms interface{}, ret interface{}) (*http.Request, *http.Response, []byte,, error) {
 	return PostJsonWithHeaders(url, parms, nil, ret)
 }
 
