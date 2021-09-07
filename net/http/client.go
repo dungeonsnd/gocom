@@ -45,7 +45,7 @@ func PostJsonWithHeaders(url string, parms interface{},
 	return req, resp, body, nil
 }
 
-func PostJson(url string, parms interface{}, ret interface{}) (*http.Request, *http.Response, []byte,, error) {
+func PostJson(url string, parms interface{}, ret interface{}) (*http.Request, *http.Response, []byte, error) {
 	return PostJsonWithHeaders(url, parms, nil, ret)
 }
 
