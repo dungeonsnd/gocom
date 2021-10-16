@@ -80,6 +80,36 @@ func GenRsaKey(priKeyFileName string, pubKeyFileName string, bits int) error {
 	return nil
 }
 
+func GenRsaKeyToString(bits int) (string, string, error) {
+	// gen pri
+	privateKey, err := rsa.GenerateKey(rand.Reader, bits)
+	if err != nil {
+		return "", "", err
+	}
+	derStream, err := x509.MarshalPKCS8PrivateKey(privateKey)
+	if err != nil {
+		return "", "", err
+	}
+	priBlock := &pem.Block{
+		Type:  "PRIVATE KEY",
+		Bytes: derStream,
+	}
+	priKeyBytes := pem.EncodeToMemory(priBlock)
+
+	// gen pub
+	publicKey := &privateKey.PublicKey
+	derPkix, err := x509.MarshalPKIXPublicKey(publicKey)
+	if err != nil {
+		return "", "", err
+	}
+	publicBlock := &pem.Block{
+		Type:  "PUBLIC KEY",
+		Bytes: derPkix,
+	}
+	pubKeyBytes := pem.EncodeToMemory(publicBlock)
+	return string(priKeyBytes), string(pubKeyBytes), nil
+}
+
 func GenRsaKeyPKCS1(priKeyFileName string, pubKeyFileName string, bits int) error {
 	// gen pri
 	privateKey, err := rsa.GenerateKey(rand.Reader, bits)
