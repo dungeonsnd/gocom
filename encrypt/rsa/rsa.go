@@ -41,7 +41,26 @@ func RsaDecrypt(ciphertext []byte, priKeyBytes []byte) ([]byte, error) {
 
 	block, _ := pem.Decode(priKeyBytes)
 	if block == nil {
-		return nil, errors.New("private key decode error!")
+		return nil, fmt.Errorf("private key decode error")
+	}
+
+	priv, err := x509.ParsePKCS8PrivateKey(block.Bytes)
+	if err != nil {
+		return nil, err
+	}
+	b, err := rsa.DecryptPKCS1v15(rand.Reader, priv.(*rsa.PrivateKey), ciphertext)
+	if err != nil {
+		return nil, err
+	}
+
+	return b, err
+}
+
+func RsaDecryptByPkcs1(ciphertext []byte, priKeyBytes []byte) ([]byte, error) {
+
+	block, _ := pem.Decode(priKeyBytes)
+	if block == nil {
+		return nil, fmt.Errorf("private key decode error")
 	}
 
 	priv, err := x509.ParsePKCS1PrivateKey(block.Bytes)
