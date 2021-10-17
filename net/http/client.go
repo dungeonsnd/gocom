@@ -10,6 +10,11 @@ import (
 
 func PostJsonWithHeaders(url string, parms interface{},
 	headers map[string]string, ret interface{}) (*http.Request, *http.Response, []byte, error) {
+	return SendJsonWithHeaders("POST", url, parms, headers, ret)
+}
+
+func SendJsonWithHeaders(method string, url string, parms interface{},
+	headers map[string]string, ret interface{}) (*http.Request, *http.Response, []byte, error) {
 	client := &http.Client{}
 	data, err := json.Marshal(parms)
 	if err != nil {
