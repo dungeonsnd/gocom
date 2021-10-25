@@ -10,7 +10,7 @@ package bluetoothutil
 import (
 	"fmt"
 
-	"tinygo.org/x/bluetooth"
+	"github.com/dungeonsnd/bluetooth"
 )
 
 var (
