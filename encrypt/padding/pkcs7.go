@@ -9,7 +9,7 @@
 // amount of bytes is appended all of value N.
 //
 // Please review the tests for this package for examples.
-package pkcs7
+package padding
 
 import (
 	"bytes"
@@ -23,7 +23,7 @@ import (
 //
 // Expected Output: {0xDE, 0xAD, 0xBE, 0xEF, 0x04, 0x04, 0x04, 0x04}
 //
-func Padding(src []byte, blockSize int) []byte {
+func Pkcs7Padding(src []byte, blockSize int) []byte {
 	padding := blockSize - len(src)%blockSize
 	padtext := bytes.Repeat([]byte{byte(padding)}, padding)
 	return append(src, padtext...)
@@ -31,7 +31,7 @@ func Padding(src []byte, blockSize int) []byte {
 
 // Unpad takes a source byte slice and will remove any padding added according
 // to PKCS#7 specifications. An error is returned for invalid padding.
-func Unpadding(src []byte) (dst []byte, err error) {
+func Pkcs7Unpadding(src []byte) (dst []byte, err error) {
 	length := len(src)
 	unpadding := int(src[length-1])
 	if unpadding >= length {
