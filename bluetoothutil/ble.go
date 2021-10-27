@@ -26,8 +26,8 @@ var adapter *bluetooth.Adapter
 
 type OnRecvCallback func(client bluetooth.Connection, offset int, value []byte)
 
-func StartByServiceUUID(serviceName, serviceUUID string, recvCallBack OnRecvCallback) error {
-	uuid, err := bluetooth.ParseUUID(serviceUUID)
+func StartByServiceUUID(serviceName, _serviceUUID string, recvCallBack OnRecvCallback) error {
+	uuid, err := bluetooth.ParseUUID(_serviceUUID)
 	if err != nil {
 		return fmt.Errorf("Faled bluetooth.ParseUUID,  err:%v", err)
 	}
