@@ -26,17 +26,20 @@ var adapter *bluetooth.Adapter
 
 type OnRecvCallback func(client bluetooth.Connection, offset int, value []byte)
 
-func StartByServiceUUID(serviceName, _serviceUUID string, recvCallBack OnRecvCallback) error {
+func StartByServiceUUID(serviceName, _serviceUUID string,
+	recvCallBack OnRecvCallback,
+	writeFlags, readFlags int) error {
 	uuid, err := bluetooth.ParseUUID(_serviceUUID)
 	if err != nil {
 		return fmt.Errorf("Faled bluetooth.ParseUUID,  err:%v", err)
 	}
 	// fmt.Printf("uuid=%v \n", uuid)
 	serviceUUID = uuid
-	return Start(serviceName, recvCallBack)
+	return Start(serviceName, recvCallBack, writeFlags, readFlags)
 }
 
-func Start(serviceName string, recvCallBack OnRecvCallback) error {
+func Start(serviceName string, recvCallBack OnRecvCallback,
+	writeFlags, readFlags int) error {
 	// uuid, err := bluetooth.ParseUUID("12342233-0000-1000-8000-A068189DFD22")
 	// if err != nil {
 	// 	return fmt.Errorf("Faled bluetooth.ParseUUID,  err:%v", err)
@@ -83,7 +86,7 @@ func Start(serviceName string, recvCallBack OnRecvCallback) error {
 			{
 				Handle: &rxChar,
 				UUID:   rxUUID,
-				Flags:  bluetooth.CharacteristicWritePermission,
+				Flags:  writeFlags, //bluetooth.CharacteristicWritePermission,
 				WriteEvent: func(client bluetooth.Connection, offset int, value []byte) {
 					// txChar.Write(value)
 					recvCallBack(client, offset, value)
@@ -92,7 +95,7 @@ func Start(serviceName string, recvCallBack OnRecvCallback) error {
 			{
 				Handle: &txChar,
 				UUID:   txUUID,
-				Flags:  bluetooth.CharacteristicNotifyPermission | bluetooth.CharacteristicReadPermission,
+				Flags:  readFlags, // bluetooth.CharacteristicNotifyPermission | bluetooth.CharacteristicReadPermission,
 			},
 		},
 	})
