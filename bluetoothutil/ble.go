@@ -29,7 +29,8 @@ type OnRecvCallback func(client bluetooth.Connection, offset int, value []byte)
 
 func StartByServiceUUID(serviceName, _serviceUUID string,
 	recvCallBack OnRecvCallback,
-	writeFlags, readFlags int) error {
+	writeFlags bluetooth.CharacteristicWritePermission,
+	readFlags bluetooth.CharacteristicPermissions) error {
 	uuid, err := bluetooth.ParseUUID(_serviceUUID)
 	if err != nil {
 		return fmt.Errorf("Faled bluetooth.ParseUUID,  err:%v", err)
