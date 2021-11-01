@@ -5,8 +5,8 @@ import (
 	"github.com/dungeonsnd/gocom/test/encrypt/aes"
 	"github.com/dungeonsnd/gocom/test/encrypt/rsa"
 
-	"tinygo.org/x/bluetooth"
-	// "github.com/dungeonsnd/bluetooth"
+	// "tinygo.org/x/bluetooth"
+	"github.com/dungeonsnd/bluetooth"
 )
 
 func main() {
