@@ -10,7 +10,7 @@ package bluetoothutil
 import (
 	"fmt"
 
-	"github.com/dungeonsnd/bluetooth"
+	// "github.com/dungeonsnd/bluetooth"
 	"tinygo.org/x/bluetooth"
 )
 
@@ -29,8 +29,7 @@ type OnRecvCallback func(client bluetooth.Connection, offset int, value []byte)
 
 func StartByServiceUUID(serviceName, _serviceUUID string,
 	recvCallBack OnRecvCallback,
-	writeFlags bluetooth.CharacteristicWritePermission,
-	readFlags bluetooth.CharacteristicPermissions) error {
+	writeFlags, readFlags bluetooth.CharacteristicPermissions) error {
 	uuid, err := bluetooth.ParseUUID(_serviceUUID)
 	if err != nil {
 		return fmt.Errorf("Faled bluetooth.ParseUUID,  err:%v", err)
@@ -41,8 +40,7 @@ func StartByServiceUUID(serviceName, _serviceUUID string,
 }
 
 func Start(serviceName string, recvCallBack OnRecvCallback,
-	writeFlags bluetooth.CharacteristicWritePermission,
-	readFlags bluetooth.CharacteristicPermissions) error {
+	writeFlags, readFlags bluetooth.CharacteristicPermissions) error {
 	// uuid, err := bluetooth.ParseUUID("12342233-0000-1000-8000-A068189DFD22")
 	// if err != nil {
 	// 	return fmt.Errorf("Faled bluetooth.ParseUUID,  err:%v", err)
