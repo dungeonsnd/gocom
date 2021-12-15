@@ -217,6 +217,11 @@ func SetLogLevel(logLevel logrus.Level) {
 	logClient.logger.SetLevel(logLevel)
 }
 
+func BindHooks(hook logrus.Hook) {
+	logClient := GetInstance().GetLogger("")
+	logClient.logger.Hooks.Add(hook)
+}
+
 // Logf 格式化输出
 func Logf(logName string, logLevel LOGLEVEL, format string, args ...interface{}) {
 	logClient := GetInstance().GetLogger(logName)
