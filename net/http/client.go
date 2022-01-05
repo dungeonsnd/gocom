@@ -1,3 +1,10 @@
+/*
+ * @Author: wenchao
+ * @Date: 2021-11-01 12:19:10
+ * @LastEditors: wenchao
+ * @LastEditTime: 2022-01-06 00:48:45
+ * @Description:
+ */
 package http
 
 import (
@@ -16,7 +23,7 @@ func PostJsonWithHeaders(url string, parms interface{},
 
 func SendJsonWithHeaders(method string, url string, parms interface{},
 	headers map[string]string, ret interface{}) (*http.Request, *http.Response, []byte, error) {
-	client := &http.Client{Timeout: time.Millisecond * 60}
+	client := &http.Client{Timeout: time.Second * 60}
 	data, err := json.Marshal(parms)
 	if err != nil {
 		return nil, nil, nil, fmt.Errorf("failed Marshal, err:%v, parms:%+v", err, parms)
@@ -56,7 +63,7 @@ func PostJson(url string, parms interface{}, ret interface{}) (*http.Request, *h
 }
 
 func PostJsonReturnMap(url string, parms interface{}) (interface{}, error) {
-	client := &http.Client{Timeout: time.Millisecond * 60}
+	client := &http.Client{Timeout: time.Second * 60}
 	data, err := json.Marshal(parms)
 	if err != nil {
 		return nil, err
