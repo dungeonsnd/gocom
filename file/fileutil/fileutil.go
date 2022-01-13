@@ -162,7 +162,7 @@ func WriteToFile(filename string, content []byte, truncateIfExist bool) error {
 	if n != len(content) {
 		return errors.New("written length error")
 	}
-	return nil
+	return fileObj.Sync()
 }
 
 func WriteToFileWithFlag(filename string, content []byte, flag int) error {
@@ -187,7 +187,7 @@ func WriteToFileWithFlag(filename string, content []byte, flag int) error {
 	if n != len(content) {
 		return errors.New("written length error")
 	}
-	return nil
+	return fileObj.Sync()
 }
 
 func ReadFromFile(filename string) ([]byte, error) {
