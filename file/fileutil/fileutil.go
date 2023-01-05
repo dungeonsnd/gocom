@@ -193,7 +193,6 @@ func WriteToFileWithFlag(filename string, content []byte, flag int) error {
 func ReadFromFile(filename string) ([]byte, error) {
 	fileObj, err := os.Open(filename)
 	if err != nil {
-		fmt.Printf("ReadFromFile, Open err=%v\n", err)
 		return nil, err
 	}
 	defer fileObj.Close()
@@ -210,7 +209,6 @@ func MoveFile(file, targetDirWithoutTargetName string) error {
 	targetDir := targetDirWithoutTargetName
 	err := CreateDirRecursive(targetDir)
 	if err != nil {
-		//fmt.Printf("CreateDirRecursive {%v} failed :%v \n", targetDir, err)
 		return err
 	}
 
@@ -230,7 +228,6 @@ func MoveFile(file, targetDirWithoutTargetName string) error {
 
 	err = os.Rename(file, t)
 	if err != nil {
-		//fmt.Printf("Rename {%v to %v} failed :%v \n", file, t, err)
 		return err
 	}
 
